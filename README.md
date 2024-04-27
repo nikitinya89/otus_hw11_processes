@@ -15,8 +15,8 @@
 
 ## Выволнение
 ### Написать свою реализацию ps -ax
-Результат выполнения задания - скрипт *ps.sh*. Он обрабатывает содержимое файла /proc/*/status и выводит таблицу на экран. Примерный вывод скрипта:
-```
+Результат выполнения задания - скрипт *ps.sh*. Он обрабатывает содержимое файла */proc/\*/status* и выводит таблицу на экран. Примерный вывод скрипта:
+```bash
 PID     STAT            NAME
 1       S (sleeping)    systemd
 2       S (sleeping)    kthreadd
@@ -60,3 +60,81 @@ PID     STAT            NAME
 90      I (idle)        kworker/0:1H-kblockd
 ...
 ```
+### Написать свою реализацию lsof
+Результат выполнения задания - скрипт *lsof.sh*. Он обрабатывает содержимое файлов */proc/\*/status*, */proc/\*/stat*, */proc/\*/fd* и */proc/\*/maps* и выводит таблицу на экран. Примерный вывод скрипта:
+```bash
+COMMAND PID     NAME
+systemd 1       /dev/null
+systemd 1       /dev/null
+systemd 1       /proc/1/mountinfo
+systemd 1       socket:[19493]
+systemd 1       socket:[19231]
+systemd 1       socket:[18844]
+systemd 1       socket:[18384]
+systemd 1       socket:[18375]
+systemd 1       socket:[21978]
+systemd 1       anon_inode:inotify
+systemd 1       socket:[17971]
+
+...
+systemd 1       /usr/lib/x86_64-linux-gnu/libgcrypt.so.20.3.4
+systemd 1       /usr/lib/x86_64-linux-gnu/libgpg-error.so.0.32.1
+systemd 1       /usr/lib/x86_64-linux-gnu/libip4tc.so.2.0.0
+systemd 1       /usr/lib/x86_64-linux-gnu/libkmod.so.2.3.7
+systemd 1       /usr/lib/x86_64-linux-gnu/liblz4.so.1.9.3
+systemd 1       /usr/lib/x86_64-linux-gnu/liblzma.so.5.2.5
+systemd 1       /usr/lib/x86_64-linux-gnu/libmount.so.1.1.0
+systemd 1       /usr/lib/x86_64-linux-gnu/libpam.so.0.85.1
+systemd 1       /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.10.4
+systemd 1       /usr/lib/x86_64-linux-gnu/libseccomp.so.2.5.3
+systemd 1       /usr/lib/x86_64-linux-gnu/libselinux.so.1
+systemd 1       /usr/lib/x86_64-linux-gnu/libzstd.so.1.4.8
+systemd-journal 338     /dev/null
+systemd-journal 338     /dev/null
+systemd-journal 338     socket:[18149]
+systemd-journal 338     /proc/sys/kernel/hostname
+systemd-journal 338     anon_inode:[signalfd]
+systemd-journal 338     anon_inode:[signalfd]
+systemd-journal 338     anon_inode:[signalfd]
+systemd-journal 338     socket:[18151]
+systemd-journal 338     anon_inode:[timerfd]
+systemd-journal 338     socket:[18375]
+...
+```
+
+### Дописать обработчики сигналов в прилагаемом скрипте
+В скрипт добавлены обработчики сигналов **SIGINT**, **SIGTERM**, **SIGALRM**, **SIGUSR1** и **SIGUSR2**
+```python
+import signal
+
+def sigint_handler(signum, frame):
+    print("SIGINT signal recieved. Exiting...")
+    sys.exit(0)
+def sigtrm_handler(signum, frame):
+    print("SIGTERM signal received. Exiting...")
+    sys.exit(0)
+def sigalarm_handler(signum, frame):
+    print("!!!!!!!!!!!!!!!! SIGALRM signal received !!!!!!!!!!!!!!!!")
+def sigusr1_handler(signal, frame):
+    print("SIGUSR1 signal received. Doing something...")
+def sigusr2_handler(signal, frame):
+    print("SIGUSR2 signal received. Doing something else...")
+
+signal.signal(signal.SIGINT, sigint_handler)
+signal.signal(signal.SIGTERM, sigtrm_handler)
+signal.signal(signal.SIGALRM, sigalarm_handler)
+signal.signal(signal.SIGUSR1, sigusr1_handler)
+signal.signal(signal.SIGUSR2, sigusr2_handler)
+signal.alarm(5)
+```
+**SIGALRM:** Через 5 секунд выводится сообщение `!!!!!!!!!!!!!!!! SIGALRM signal received !!!!!!!!!!!!!!!!`  
+**SIGINT**: При нажатии комбинации `Ctrl+C` появляется сообщение `SIGINT signal recieved. Exiting...`, и скрипт завершается  
+**SIGTERM**: При вводе команды `kill <PID>` появляется сообщение `SIGTERM signal recieved. Exiting...`, и скрипт завершается  
+**SIGUSR1**: При вводе команды `kill -SIGUSR1 <PID>` появляется сообщение `SIGUSR1 signal received. Doing something...`  
+**SIGUSR2**: При вводе команды `kill -SIGUSR2 <PID>` появляется сообщение `SIGUSR2 signal received. Doing something else...`  
+
+### Реализовать 2 конкурирующих процесса по IO. пробовать запустить с разными ionice
+
+
+### Реализовать 2 конкурирующих процесса по CPU. пробовать запустить с разными nice
+
