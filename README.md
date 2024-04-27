@@ -103,7 +103,7 @@ systemd-journal 338     socket:[18375]
 ```
 
 ### Дописать обработчики сигналов в прилагаемом скрипте
-В скрипт добавлены обработчики сигналов **SIGINT**, **SIGTERM**, **SIGALRM**, **SIGUSR1** и **SIGUSR2**
+В скрипт *myfork.py* добавлены обработчики сигналов **SIGINT**, **SIGTERM**, **SIGALRM**, **SIGUSR1** и **SIGUSR2**
 ```python
 import signal
 
@@ -137,4 +137,27 @@ signal.alarm(5)
 
 
 ### Реализовать 2 конкурирующих процесса по CPU. пробовать запустить с разными nice
+Скрипт *cpu.sh* одновременно запускает 2 процесса, выполняющих команду `dd if=/dev/urandom of=/dev/null bs=4096 count=100000` с разными значениями *nice*. В результату выполнения скрипта на экран выводится статистика. Как видно, процесс с наивысшим приоритетом выполнился быстрее.
+```bash
+High Priority Process started
+Low Priority Process started
 
+All processes finished
+
+Process HighPriority started at 12:24:23
+
+Process HighPriority finished at 12:24:25
+
+real    0m1.897s
+user    0m0.021s
+sys     0m1.811s
+
+Process LowPriority started at 12:24:23
+
+Process LowPriority finished at 12:24:27
+
+real    0m3.832s
+user    0m0.037s
+sys     0m1.850s
+
+```
