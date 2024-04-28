@@ -16,7 +16,6 @@ temp_dir2=/root/dir2
 temp_dir3=/root/dir1_2
 temp_dir4=/root/dir2_2
 
-# Генерируем временные файлы
 echo "Generating temporary files..."
 for i in {1..100}; do
     dd if=/dev/zero of="$temp_dir1/file$i" bs=1M count=10 &>/dev/null
@@ -27,7 +26,6 @@ cp $temp_dir1/* $temp_dir2
 echo "Creating archives..."
 tar -cf "$temp_dir3/archive.tar" -C "$temp_dir1" . >/dev/null
 tar -cf "$temp_dir4/archive.tar" -C "$temp_dir2" . >/dev/null
-
 
 echo "Starting both processes..."
 (time run_process "HighPriority" "$temp_dir3" "-c1" "-n0") 2>> HighPriority.txt &
