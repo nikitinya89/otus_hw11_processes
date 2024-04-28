@@ -134,11 +134,33 @@ signal.alarm(5)
 **SIGUSR2**: При вводе команды `kill -SIGUSR2 <PID>` появляется сообщение `SIGUSR2 signal received. Doing something else...`  
 
 ### Реализовать 2 конкурирующих процесса по IO. пробовать запустить с разными ionice
-Скрипт *io.sh* 
-Как видно, процесс с наивысшим приоритетом *ionice* выполнился быстрее.
+Скрипт *io.sh* одновременно начинает разархивировать два одинаковых архива с разными значениями *ionice*. По окончании работы скрипта на экран выводится статистика. Как видно, процесс с наивысшим приоритетом *ionice* выполнился быстрее.
+```bash
+Generating temporary files...
+Copying temporary files...
+Creating archives...
+Starting both processes...
 
+All processes finished
+
+Process HighPriority started at 13:00:53
+
+Process HighPriority finished at 13:00:59
+
+real   0m5.284s
+user   0m0.011s
+sys 0m2.450s
+
+Process LowPriority started at 13:00:53
+
+Process LowPriority finished at 13:01:03
+
+real   0m9.885s
+user   0m0.023s
+sys 0m3.179s
+```
 ### Реализовать 2 конкурирующих процесса по CPU. пробовать запустить с разными nice
-Скрипт *cpu.sh* одновременно запускает 2 процесса, выполняющих команду `dd if=/dev/urandom of=/dev/null bs=4096 count=100000` с разными значениями *nice*. В результату выполнения скрипта на экран выводится статистика. Как видно, процесс с наивысшим приоритетом *nice* выполнился быстрее.
+Скрипт *cpu.sh* одновременно запускает 2 процесса, выполняющих команду `dd if=/dev/urandom of=/dev/null bs=4096 count=100000` с разными значениями *nice*. По окончании работы скрипта на экран выводится статистика. Как видно, процесс с наивысшим приоритетом *nice* выполнился быстрее.
 ```bash
 High Priority Process started
 Low Priority Process started
